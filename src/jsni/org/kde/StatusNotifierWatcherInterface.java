@@ -4,6 +4,6 @@ import org.freedesktop.dbus.DBusInterface;
 import org.freedesktop.dbus.DBusInterfaceName;
 
 @DBusInterfaceName("org.kde.StatusNotifierWatcher") 
-public interface StatusNotifierWatcher extends DBusInterface {
+public interface StatusNotifierWatcherInterface extends DBusInterface {
     public void RegisterStatusNotifierItem(String busName);
 }

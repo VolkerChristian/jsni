@@ -11,7 +11,7 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
 import jsni.MouseDoubleClickEventDispatcher;
-import jsni.MouseSingleClickEvent;
+//import jsni.MouseSingleClickEvent;
 import jsni.MouseClickEvent;
 import jsni.MouseClickListener;
 import jsni.MouseDoubleClickEvent;
@@ -105,7 +105,7 @@ public class JSniTest {
 			sni.setMouseClickEventDispatcher(new MouseDoubleClickEventDispatcher());
 
 			// show the StatusNotificationItem
-			sni.show();
+			sni.setVisible(true);
 
 			// add listener
 			sni.addActivateListener(new MouseClickListener() {
@@ -122,6 +122,23 @@ public class JSniTest {
 						System.out.println("Hide Menu");
 						c.setVisible(false);
 						menu.setVisible(false);
+					}
+					try {
+						sni.setVisible(false);
+						sni.disconnect();
+						try {
+							Thread.sleep(2000);
+							sni.connect();
+							sni.setVisible(true);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (StatusNotifierItemException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					} catch (StatusNotifierItemException e) {
+						e.printStackTrace();
 					}
 				}
 			});

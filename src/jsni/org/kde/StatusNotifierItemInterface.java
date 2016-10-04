@@ -7,7 +7,7 @@ import org.freedesktop.dbus.DBusSignal;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 @DBusInterfaceName("org.kde.StatusNotifierItem")
-public interface StatusNotifierItem extends DBus.Properties, DBusInterface {
+public interface StatusNotifierItemInterface extends DBus.Properties, DBusInterface {
     public static class NewTitle extends DBusSignal {
         public NewTitle(String path) throws DBusException {
             super(path);

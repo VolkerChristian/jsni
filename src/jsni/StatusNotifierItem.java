@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
 
+import jsni.org.kde.StatusNotifierItemInterface;
+import jsni.org.kde.StatusNotifierWatcherInterface;
+
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.DBusSignal;
 import org.freedesktop.dbus.Variant;
@@ -14,14 +17,22 @@ import org.freedesktop.dbus.exceptions.DBusException;
 public class StatusNotifierItem {
 	private StatusNotifierItemD snid = null;
 
-	public StatusNotifierItem() {
+	public StatusNotifierItem() throws StatusNotifierItemException {
 		snid = new StatusNotifierItemD();
 	}
-	
+
+	public void connect() throws StatusNotifierItemException {
+		snid.connect();
+	}
+
+	public void disconnect() {
+		snid.disconnect();
+	}
+
 	public MouseClickEventDispatcher setMouseClickEventDispatcher(MouseClickEventDispatcher mced) {
 		return snid.setMouseClickEventDispatcher(mced);
 	}
-	
+
 	public MouseClickEventDispatcher getMouseClickEventDispatcher() {
 		return snid.getMouseClickEventDispatcher();
 	}
@@ -30,12 +41,9 @@ public class StatusNotifierItem {
 		return snid.isVisible();
 	}
 
-	public void show() throws StatusNotifierItemException {
-		snid.show();
-	}
+	public void setVisible(boolean visible) throws StatusNotifierItemException {
+		snid.setVisible(visible);
 
-	public void hide() {
-		snid.hide();
 	}
 
 	public <A> void set(String name, A value) {
@@ -62,22 +70,31 @@ public class StatusNotifierItem {
 		snid.addScrollListener(listener);
 	}
 
-	private static class StatusNotifierItemD implements jsni.org.kde.StatusNotifierItem {
+	private static class StatusNotifierItemD implements StatusNotifierItemInterface {
 		private DBusConnection dbus = null;
+		private StatusNotifierWatcherInterface sniWatcher = null;
 
 		private MouseClickEventDispatcher mced = new MouseSingleClickEventDispatcher();
-		
+
 		@SuppressWarnings("rawtypes")
 		private Hashtable<String, Property> properties = null;
-		
+
 		private ArrayList<MouseClickListener> activateListener = new ArrayList<MouseClickListener>();
 		private ArrayList<MouseClickListener> contextMenuListener = new ArrayList<MouseClickListener>();
 		private ArrayList<MouseClickListener> secondActivateListener = new ArrayList<MouseClickListener>();
 		private ArrayList<MouseScrollListener> scrollListener = new ArrayList<MouseScrollListener>();
 
+		private boolean isVisible = false;
 
 		@SuppressWarnings("rawtypes")
-		private StatusNotifierItemD() {
+		private StatusNotifierItemD() throws StatusNotifierItemException {
+			try {
+				dbus = DBusConnection.getConnection(DBusConnection.SESSION);
+				sniWatcher = dbus.getRemoteObject("org.kde.StatusNotifierWatcher", "/StatusNotifierWatcher",
+						StatusNotifierWatcherInterface.class);
+			} catch (DBusException e) {
+				throw new StatusNotifierItemException(e.getMessage());
+			}
 
 			properties = new Hashtable<String, Property>();
 
@@ -100,12 +117,29 @@ public class StatusNotifierItem {
 			// AttentionIconPixmap
 			// ToolTip
 		}
-		
+
+		private void connect() throws StatusNotifierItemException {
+			if (dbus == null) {
+				try {
+					dbus = DBusConnection.getConnection(DBusConnection.SESSION);
+					sniWatcher = dbus.getRemoteObject("org.kde.StatusNotifierWatcher", "/StatusNotifierWatcher",
+							StatusNotifierWatcherInterface.class);
+				} catch (DBusException e) {
+					throw new StatusNotifierItemException(e.getMessage());
+				}
+			}
+		}
+
+		private void disconnect() {
+			dbus.disconnect();
+			dbus = null;
+		}
+
 		private MouseClickEventDispatcher setMouseClickEventDispatcher(MouseClickEventDispatcher mced) {
 			MouseClickEventDispatcher oldMced = mced;
-			
+
 			this.mced = mced;
-			
+
 			return oldMced;
 		}
 
@@ -127,29 +161,27 @@ public class StatusNotifierItem {
 
 		/* *************** API Methods **************** */
 		private boolean isVisible() {
-			return dbus != null;
+			return isVisible;
 		}
 
-		private void show() throws StatusNotifierItemException {
-			if (dbus == null) {
+		private void setVisible(boolean visible) throws StatusNotifierItemException {
+			if (dbus != null) {
 				try {
-					dbus = DBusConnection.getConnection(DBusConnection.SESSION);
-					dbus.requestBusName("org.tvbrowser");
-					dbus.exportObject("/StatusNotifierItem", this);
-
-					jsni.org.kde.StatusNotifierWatcher watcher = dbus.getRemoteObject("org.kde.StatusNotifierWatcher",
-							"/StatusNotifierWatcher", jsni.org.kde.StatusNotifierWatcher.class);
-					watcher.RegisterStatusNotifierItem("org.tvbrowser");
+					if (visible && !isVisible && dbus != null) {
+						dbus.requestBusName("org.tvbrowser");
+						dbus.exportObject("/StatusNotifierItem", this);
+						sniWatcher.RegisterStatusNotifierItem("org.tvbrowser");
+					}
+					if (!visible && isVisible && dbus != null) {
+						dbus.unExportObject("/StatusNotifierItem");
+						dbus.releaseBusName("org.tvbrowser");
+					}
 				} catch (DBusException e) {
 					throw new StatusNotifierItemException(e.getMessage());
 				}
-			}
-		}
-
-		private void hide() {
-			if (dbus != null) {
-				dbus.disconnect();
-				dbus = null;
+				isVisible = visible;
+			} else {
+				throw new StatusNotifierItemException("No DBus-Connection");
 			}
 		}
 
@@ -365,17 +397,17 @@ public class StatusNotifierItem {
 
 		@Override
 		public void Activate(int x, int y) {
-			mced.click(activateListener,  x, y);
+			mced.click(activateListener, x, y);
 		}
 
 		@Override
 		public void ContextMenu(int x, int y) {
-			mced.click(contextMenuListener,  x, y);
+			mced.click(contextMenuListener, x, y);
 		}
 
 		@Override
 		public void SecondaryActivate(int x, int y) {
-			mced.click(secondActivateListener,  x, y);
+			mced.click(secondActivateListener, x, y);
 		}
 
 		@Override

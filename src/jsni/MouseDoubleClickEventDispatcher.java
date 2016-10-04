@@ -7,17 +7,18 @@ import java.util.ArrayList;
 import javax.swing.Timer;
 
 public class MouseDoubleClickEventDispatcher extends MouseSingleClickEventDispatcher {
+	public final static int DEFAULT_DELAY = 200;
 	private Timer mTimer = null;;
 	private ArrayList<MouseClickListener> cmcl = null;
 	private int x = 0;
 	private int y = 0;
 
 	public MouseDoubleClickEventDispatcher() {
-		this(200);
+		this(DEFAULT_DELAY);
 	}
 	
-	public MouseDoubleClickEventDispatcher(int initialDelay) {
-		mTimer = new Timer(initialDelay, new ActionListener() {
+	public MouseDoubleClickEventDispatcher(int delay) {
+		mTimer = new Timer(delay, new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
 				synchronized (mTimer) {
 					fireMouseClickEvent(new MouseDoubleClickEvent(1, x, y, 0, 0));
@@ -26,8 +27,16 @@ public class MouseDoubleClickEventDispatcher extends MouseSingleClickEventDispat
 		});
 	}
 	
-	public void setInitialDelay(int initialDelay) {
-		mTimer.setInitialDelay(initialDelay);
+	public int setDelay(int delay) {
+		int oldDelay = mTimer.getInitialDelay();
+		
+		mTimer.setInitialDelay(delay);
+		
+		return oldDelay;
+	}
+	
+	public int getDelay() {
+		return mTimer.getInitialDelay();
 	}
 
 	public void click(ArrayList<MouseClickListener> newMouseClickListener, int x, int y) {
