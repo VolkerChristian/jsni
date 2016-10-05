@@ -238,6 +238,35 @@ public class StatusNotifierItem {
 		}
 
 		/* *********** Properties ************ */
+
+		private static class ClassValuePair<A> {
+			Class<?> type;
+			A value;
+			
+			ClassValuePair(Class<?> c, A value) {
+				type = c;
+				this.value = value;
+			}
+		}
+		
+		private static <A> Class<?>[] getClassArray(@SuppressWarnings("unchecked") ClassValuePair<A>...typeValues) {
+			Class<?>[] ca = new Class[typeValues.length + 1];
+			ca[0] = String.class;
+			for (int i = 0; i < typeValues.length; i++) {
+				ca[i + 1] = typeValues[i].type;
+			}
+			return ca;
+		}
+		
+		private static <A> Object[] getValueArray(@SuppressWarnings("unchecked") ClassValuePair<A>...typeValues) {
+			Object[] a = new Object[typeValues.length + 1];
+			a[0] = new String("/StatusNotifierItem");
+			for (int i = 0; i < typeValues.length; i++) {
+				a[i + 1] = typeValues[i].value;
+			}
+			return a;
+		}
+		
 		private class Property<A> {
 			A value = null;
 
@@ -252,14 +281,15 @@ public class StatusNotifierItem {
 			public void set(A value) {
 				this.value = value;
 			}
-
+			
 			@SuppressWarnings({ "rawtypes", "unchecked" })
-			public void set(A value, String sig) {
+			public void set(A value, String sig, ClassValuePair...tv) {
+				System.out.println("Signal: " + sig + ", Value: " + value);
 				this.value = value;
 				try {
 					Class sigClass = Class.forName(StatusNotifierItemD.class.getInterfaces()[0].getName() + "$" + sig);
-					Constructor con = sigClass.getConstructor(String.class);
-					DBusSignal dbusSignal = (DBusSignal) con.newInstance("/StatusNotifierItem");
+					Constructor con = sigClass.getConstructor(StatusNotifierItemD.getClassArray(tv));
+					DBusSignal dbusSignal = (DBusSignal) con.newInstance(StatusNotifierItemD.getValueArray(tv));
 					if (dbus != null) {
 						dbus.sendSignal(dbusSignal);
 					}
@@ -306,9 +336,11 @@ public class StatusNotifierItem {
 				super("");
 			}
 
-			/*
-			 * public void set(String value) { set(value, "NewStatus"); }
-			 */
+			public void set(String value) {
+				ClassValuePair<?>[] tv = new ClassValuePair<?>[1];
+				tv[0] = new ClassValuePair<String>(String.class, value);
+				set(value, "NewStatus", tv);
+			}
 		}
 
 		@SuppressWarnings("unused")
@@ -338,9 +370,11 @@ public class StatusNotifierItem {
 				super("");
 			}
 
-			/*
-			 * public void set(String value) { set(value, "NewIconThemePath"); }
-			 */
+			public void set(String value) {
+				ClassValuePair<?>[] tv = new ClassValuePair<?>[1];
+				tv[0] = new ClassValuePair<String>(String.class, value);
+				set(value, "NewIconThemePath", tv);
+			}
 		}
 
 		@SuppressWarnings("unused")
@@ -382,6 +416,16 @@ public class StatusNotifierItem {
 				super("");
 			}
 		}
+		
+/*
+		@SuppressWarnings("unused")
+		private class IconPixmap extends Property<List> {
+			public IconPixmap() {
+				super(new ArrayList());
+			}
+		}
+*/
+
 
 		/* ********** StatusNotifierInterface Methods *********** */
 		@Override
