@@ -1,14 +1,21 @@
 package jsnitest;
 
+import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Enumeration;
 
 import javax.swing.JDialog;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.UIDefaults;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
+import javax.swing.plaf.FontUIResource;
 
 import jsni.MouseDoubleClickEventDispatcher;
 //import jsni.MouseSingleClickEvent;
@@ -94,10 +101,64 @@ public class JSniTest {
 		
 		menu.setVisible(false);
 	}
+	
+	public static void test() throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
+		float scale=1.1f;
+		UIManager.LookAndFeelInfo looks[] = UIManager.getInstalledLookAndFeels();
+
+		for (UIManager.LookAndFeelInfo info : looks) {
+    
+		    //if you want to change LaF to a spesific LaF,such as "GTK"
+		    //put here a if statement like:
+		    //if(info.getClassName().contains("GTK"))
+			System.out.println("ClassName: " + info.getClassName());
+		    UIManager.setLookAndFeel(info.getClassName());
+
+		    UIDefaults defaults = UIManager.getDefaults();
+		    Enumeration<Object> newKeys = defaults.keys();    
+
+		    while (newKeys.hasMoreElements()) {
+	  
+		        Object obj = newKeys.nextElement();
+		        Object current = UIManager.get(obj);
+		        if (current instanceof FontUIResource) {
+		            FontUIResource resource = (FontUIResource) current;
+		            System.out.printf("FontUIResource Before: %49s : %s\n", obj,  UIManager.get(obj));
+		            defaults.put(obj, new FontUIResource(resource.deriveFont(resource.getSize2D()*scale)));
+		            System.out.printf("FontUIResource After: %50s : %s\n", obj,  UIManager.get(obj));
+		        } else if (current instanceof Font) {
+		            Font resource = (Font) current;
+		            System.out.printf("Font Before %49s : %s\n", obj,  UIManager.get(obj));
+		            defaults.put(obj, resource.deriveFont(resource.getSize2D()*scale));
+		            System.out.printf("Font After %50s : %s\n", obj,  UIManager.get(obj));
+		        }
+		    }
+		}
+	}
+	
 
 	public static void main(String[] args) {
+		try {
+			test();
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (InstantiationException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IllegalAccessException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (UnsupportedLookAndFeelException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		createMenu();
-
+		
+		System.out.println(Toolkit.getDefaultToolkit().getDesktopProperty("gnome.Xft/DPI"));
+		int dpi = Toolkit.getDefaultToolkit().getScreenResolution();
+		
+		System.out.println("DPI: " + dpi);
 		try {
 			// create new StatusNotifierItem
 			StatusNotifierItem sni = new StatusNotifierItem();
