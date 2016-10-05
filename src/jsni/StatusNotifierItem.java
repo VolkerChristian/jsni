@@ -46,7 +46,7 @@ public class StatusNotifierItem {
 
 	}
 
-	public <A> void set(String name, A value) {
+	public <A> void set(String name, A value) throws StatusNotifierItemException {
 		snid.set(name, value);
 	}
 
@@ -88,14 +88,8 @@ public class StatusNotifierItem {
 
 		@SuppressWarnings("rawtypes")
 		private StatusNotifierItemD() throws StatusNotifierItemException {
-			try {
-				dbus = DBusConnection.getConnection(DBusConnection.SESSION);
-				sniWatcher = dbus.getRemoteObject("org.kde.StatusNotifierWatcher", "/StatusNotifierWatcher",
-						StatusNotifierWatcherInterface.class);
-			} catch (DBusException e) {
-				throw new StatusNotifierItemException(e.getMessage());
-			}
-
+			connect();
+			
 			properties = new Hashtable<String, Property>();
 
 			addProperty("Category");
@@ -147,7 +141,7 @@ public class StatusNotifierItem {
 			return mced;
 		}
 
-		private void addProperty(String name) {
+		private void addProperty(String name) throws StatusNotifierItemException {
 			try {
 				Class<?> innerClass = Class.forName(StatusNotifierItemD.class.getName() + "$" + name);
 				Constructor<?> ctor = innerClass.getDeclaredConstructor(this.getClass());
@@ -155,7 +149,7 @@ public class StatusNotifierItem {
 				properties.put(property.name(), property);
 			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
 					| IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				e.printStackTrace();
+				throw new StatusNotifierItemException(e.getMessage());
 			}
 		}
 
@@ -167,12 +161,12 @@ public class StatusNotifierItem {
 		private void setVisible(boolean visible) throws StatusNotifierItemException {
 			if (dbus != null) {
 				try {
-					if (visible && !isVisible && dbus != null) {
+					if (visible && !isVisible) {
 						dbus.requestBusName("org.tvbrowser");
 						dbus.exportObject("/StatusNotifierItem", this);
 						sniWatcher.RegisterStatusNotifierItem("org.tvbrowser");
 					}
-					if (!visible && isVisible && dbus != null) {
+					if (!visible && isVisible) {
 						dbus.unExportObject("/StatusNotifierItem");
 						dbus.releaseBusName("org.tvbrowser");
 					}
@@ -186,7 +180,7 @@ public class StatusNotifierItem {
 		}
 
 		@SuppressWarnings("unchecked")
-		private <A> void set(String name, A value) {
+		private <A> void set(String name, A value) throws StatusNotifierItemException {
 			properties.get(name).set(value);
 		}
 
@@ -234,7 +228,11 @@ public class StatusNotifierItem {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <A> void Set(String inter, String prop, A value) {
-			properties.get(prop).set(value);
+			try {
+				properties.get(prop).set(value);
+			} catch (StatusNotifierItemException e) {
+				e.printStackTrace();
+			}
 		}
 
 		/* *********** Properties ************ */
@@ -278,12 +276,12 @@ public class StatusNotifierItem {
 				return value;
 			}
 
-			public void set(A value) {
+			public void set(A value) throws StatusNotifierItemException {
 				this.value = value;
 			}
 			
 			@SuppressWarnings({ "rawtypes", "unchecked" })
-			public void set(A value, String sig, ClassValuePair...tv) {
+			public void set(A value, String sig, ClassValuePair...tv) throws StatusNotifierItemException {
 				System.out.println("Signal: " + sig + ", Value: " + value);
 				this.value = value;
 				try {
@@ -296,7 +294,7 @@ public class StatusNotifierItem {
 				} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
 						| NoSuchMethodException | SecurityException | IllegalArgumentException
 						| InvocationTargetException e) {
-					e.printStackTrace();
+					throw new StatusNotifierItemException(e.getMessage());
 				}
 			}
 
@@ -325,7 +323,7 @@ public class StatusNotifierItem {
 				super("");
 			}
 
-			public void set(String value) {
+			public void set(String value) throws StatusNotifierItemException {
 				set(value, "NewTitle");
 			}
 		}
@@ -336,7 +334,7 @@ public class StatusNotifierItem {
 				super("");
 			}
 
-			public void set(String value) {
+			public void set(String value) throws StatusNotifierItemException {
 				ClassValuePair<?>[] tv = new ClassValuePair<?>[1];
 				tv[0] = new ClassValuePair<String>(String.class, value);
 				set(value, "NewStatus", tv);
@@ -370,7 +368,7 @@ public class StatusNotifierItem {
 				super("");
 			}
 
-			public void set(String value) {
+			public void set(String value) throws StatusNotifierItemException {
 				ClassValuePair<?>[] tv = new ClassValuePair<?>[1];
 				tv[0] = new ClassValuePair<String>(String.class, value);
 				set(value, "NewIconThemePath", tv);
@@ -383,7 +381,7 @@ public class StatusNotifierItem {
 				super("");
 			}
 
-			public void set(String value) {
+			public void set(String value) throws StatusNotifierItemException {
 				set(value, "NewIcon");
 			}
 		}
@@ -394,7 +392,7 @@ public class StatusNotifierItem {
 				super("");
 			}
 
-			public void set(String value) {
+			public void set(String value) throws StatusNotifierItemException {
 				set(value, "NewOverlayIcon");
 			}
 		}
@@ -405,7 +403,7 @@ public class StatusNotifierItem {
 				super("");
 			}
 
-			public void set(String value) {
+			public void set(String value) throws StatusNotifierItemException {
 				set(value, "NewAttentionIcon");
 			}
 		}
