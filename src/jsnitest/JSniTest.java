@@ -174,6 +174,12 @@ public class JSniTest {
 			sni.set("IconThemePath", "/home/voc/usr/Hagenberg/MTD/LaTeXSlides/workspace/jsni/icons");
 			sni.set("IconName", "tvbrowser");
 
+			Thread.sleep(5000);
+			
+			sni.set("Status", "Passive");
+//			sni.set("IconName", "tvbrowser");
+//			sni.set("IconThemePath", "/");
+			
 			// sni.set("WindowId", 0);
 			// sni.set("ItemIsMenu", false);
 			// sni.set("Menu", "");
@@ -185,6 +191,9 @@ public class JSniTest {
 			System.out.println("Message: " + e.getMessage());
 			e.printStackTrace();
 			System.exit(1);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 }
