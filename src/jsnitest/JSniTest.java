@@ -98,44 +98,45 @@ public class JSniTest {
 				System.out.println("Mouse clicked on Menu-Item");
 			}
 		});
-		
+
 		menu.setVisible(false);
 	}
-	
-	public static void test() throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
-		float scale=1.1f;
+
+	public static void test() throws ClassNotFoundException, InstantiationException, IllegalAccessException,
+			UnsupportedLookAndFeelException {
+		float scale = 0.7f;
 		UIManager.LookAndFeelInfo looks[] = UIManager.getInstalledLookAndFeels();
 
 		for (UIManager.LookAndFeelInfo info : looks) {
-    
-		    //if you want to change LaF to a spesific LaF,such as "GTK"
-		    //put here a if statement like:
-		    //if(info.getClassName().contains("GTK"))
-			System.out.println("ClassName: " + info.getClassName());
-		    UIManager.setLookAndFeel(info.getClassName());
 
-		    UIDefaults defaults = UIManager.getDefaults();
-		    Enumeration<Object> newKeys = defaults.keys();    
+			// if you want to change LaF to a spesific LaF,such as "GTK"
+			// put here a if statement like:
+			if (info.getClassName().contains("GTK")) {
+				System.out.println("ClassName: " + info.getClassName());
+				UIManager.setLookAndFeel(info.getClassName());
 
-		    while (newKeys.hasMoreElements()) {
-	  
-		        Object obj = newKeys.nextElement();
-		        Object current = UIManager.get(obj);
-		        if (current instanceof FontUIResource) {
-		            FontUIResource resource = (FontUIResource) current;
-		            System.out.printf("FontUIResource Before: %49s : %s\n", obj,  UIManager.get(obj));
-		            defaults.put(obj, new FontUIResource(resource.deriveFont(resource.getSize2D()*scale)));
-		            System.out.printf("FontUIResource After: %50s : %s\n", obj,  UIManager.get(obj));
-		        } else if (current instanceof Font) {
-		            Font resource = (Font) current;
-		            System.out.printf("Font Before %49s : %s\n", obj,  UIManager.get(obj));
-		            defaults.put(obj, resource.deriveFont(resource.getSize2D()*scale));
-		            System.out.printf("Font After %50s : %s\n", obj,  UIManager.get(obj));
-		        }
-		    }
+				UIDefaults defaults = UIManager.getDefaults();
+				Enumeration<Object> newKeys = defaults.keys();
+
+				while (newKeys.hasMoreElements()) {
+
+					Object obj = newKeys.nextElement();
+					Object current = UIManager.get(obj);
+					if (current instanceof FontUIResource) {
+						FontUIResource resource = (FontUIResource) current;
+						System.out.printf("FontUIResource Before: %49s : %s\n", obj, UIManager.get(obj));
+						defaults.put(obj, new FontUIResource(resource.deriveFont(resource.getSize2D() * scale)));
+						System.out.printf("FontUIResource After: %50s : %s\n", obj, UIManager.get(obj));
+					} else if (current instanceof Font) {
+						Font resource = (Font) current;
+						System.out.printf("Font Before %49s : %s\n", obj, UIManager.get(obj));
+						defaults.put(obj, resource.deriveFont(resource.getSize2D() * scale));
+						System.out.printf("Font After %50s : %s\n", obj, UIManager.get(obj));
+					}
+				}
+			}
 		}
 	}
-	
 
 	public static void main(String[] args) {
 		try {
@@ -154,15 +155,15 @@ public class JSniTest {
 			e1.printStackTrace();
 		}
 		createMenu();
-		
+
 		System.out.println(Toolkit.getDefaultToolkit().getDesktopProperty("gnome.Xft/DPI"));
 		int dpi = Toolkit.getDefaultToolkit().getScreenResolution();
-		
+
 		System.out.println("DPI: " + dpi);
 		try {
 			// create new StatusNotifierItem
 			StatusNotifierItem sni = new StatusNotifierItem();
-			
+
 			sni.setMouseClickEventDispatcher(new MouseDoubleClickEventDispatcher());
 
 			// show the StatusNotificationItem
@@ -171,9 +172,11 @@ public class JSniTest {
 			// add listener
 			sni.addActivateListener(new MouseClickListener() {
 				public void mouseClicked(MouseClickEvent mce) {
-//					System.out.println("Activated: X = " + mce.x() + ", Y = " + mce.y());
-					MouseDoubleClickEvent lmce = (MouseDoubleClickEvent) mce; 
-					System.out.println("Activated: Clicks: " + lmce.clicks() + ", X = " + lmce.x() + ", Y = " + lmce.y() + ", oldX = " + lmce.oldX() + ", oldY = " + lmce.oldY());
+					// System.out.println("Activated: X = " + mce.x() + ", Y = "
+					// + mce.y());
+					MouseDoubleClickEvent lmce = (MouseDoubleClickEvent) mce;
+					System.out.println("Activated: Clicks: " + lmce.clicks() + ", X = " + lmce.x() + ", Y = " + lmce.y()
+							+ ", oldX = " + lmce.oldX() + ", oldY = " + lmce.oldY());
 					System.out.println("Dialog visibility: " + c.isVisible() + ", undeco: " + c.isUndecorated());
 					if (!menu.isVisible()) {
 						System.out.println("Show Menu");
@@ -206,17 +209,21 @@ public class JSniTest {
 
 			sni.addContextMenuListener(new MouseClickListener() {
 				public void mouseClicked(MouseClickEvent mce) {
-//					System.out.println("ContextMenu: X = " + mce.x() + ", Y = " + mce.y());
-					MouseDoubleClickEvent lmce = (MouseDoubleClickEvent) mce; 
-					System.out.println("ContextMenu: Clicks: " + lmce.clicks() + ", X = " + lmce.x() + ", Y = " + lmce.y() + ", oldX = " + lmce.oldX() + ", oldY = " + lmce.oldY());
+					// System.out.println("ContextMenu: X = " + mce.x() + ", Y =
+					// " + mce.y());
+					MouseDoubleClickEvent lmce = (MouseDoubleClickEvent) mce;
+					System.out.println("ContextMenu: Clicks: " + lmce.clicks() + ", X = " + lmce.x() + ", Y = "
+							+ lmce.y() + ", oldX = " + lmce.oldX() + ", oldY = " + lmce.oldY());
 				}
 			});
 
 			sni.addSecondActivateListener(new MouseClickListener() {
 				public void mouseClicked(MouseClickEvent mce) {
-//					System.out.println("SecondActivated: X = " + mce.x() + ", Y = " + mce.y());
-					MouseDoubleClickEvent lmce = (MouseDoubleClickEvent) mce; 
-					System.out.println("SecondActivated: Clicks: " + lmce.clicks() + ", X = " + lmce.x() + ", Y = " + lmce.y() + ", oldX = " + lmce.oldX() + ", oldY = " + lmce.oldY());
+					// System.out.println("SecondActivated: X = " + mce.x() + ",
+					// Y = " + mce.y());
+					MouseDoubleClickEvent lmce = (MouseDoubleClickEvent) mce;
+					System.out.println("SecondActivated: Clicks: " + lmce.clicks() + ", X = " + lmce.x() + ", Y = "
+							+ lmce.y() + ", oldX = " + lmce.oldX() + ", oldY = " + lmce.oldY());
 				}
 			});
 
@@ -236,11 +243,11 @@ public class JSniTest {
 			sni.set("IconName", "tvbrowser");
 
 			Thread.sleep(5000);
-			
+
 			sni.set("Status", "Passive");
-//			sni.set("IconName", "tvbrowser");
-//			sni.set("IconThemePath", "/");
-			
+			// sni.set("IconName", "tvbrowser");
+			// sni.set("IconThemePath", "/");
+
 			// sni.set("WindowId", 0);
 			// sni.set("ItemIsMenu", false);
 			// sni.set("Menu", "");

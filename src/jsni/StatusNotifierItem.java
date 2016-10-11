@@ -282,7 +282,6 @@ public class StatusNotifierItem {
 			
 			@SuppressWarnings({ "rawtypes", "unchecked" })
 			public void set(A value, String sig, ClassValuePair...tv) throws StatusNotifierItemException {
-				System.out.println("Signal: " + sig + ", Value: " + value);
 				this.value = value;
 				try {
 					Class sigClass = Class.forName(StatusNotifierItemD.class.getInterfaces()[0].getName() + "$" + sig);
