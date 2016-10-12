@@ -1,4 +1,4 @@
-package jsnitest;
+package at.vchrist.jsnitest;
 
 import javax.swing.JComponent;
 import javax.swing.MenuSelectionManager;

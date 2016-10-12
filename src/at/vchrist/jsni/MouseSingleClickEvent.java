@@ -1,4 +1,4 @@
-package jsni;
+package at.vchrist.jsni;
 
 public class MouseSingleClickEvent implements MouseClickEvent {
     private int x;

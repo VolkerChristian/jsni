@@ -1,4 +1,4 @@
-package jsni.org.kde;
+package at.vchrist.jsni.org.kde;
 
 import org.freedesktop.dbus.DBusInterface;
 import org.freedesktop.dbus.DBusInterfaceName;

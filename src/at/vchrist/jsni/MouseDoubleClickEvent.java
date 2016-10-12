@@ -1,4 +1,4 @@
-package jsni;
+package at.vchrist.jsni;
 
 public class MouseDoubleClickEvent extends MouseSingleClickEvent {
     private int oldX;

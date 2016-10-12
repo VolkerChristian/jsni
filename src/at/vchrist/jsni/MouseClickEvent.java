@@ -1,4 +1,4 @@
-package jsni;
+package at.vchrist.jsni;
 
 public interface MouseClickEvent {
 	int x();

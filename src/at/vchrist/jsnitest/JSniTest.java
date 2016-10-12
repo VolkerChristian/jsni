@@ -1,4 +1,4 @@
-package jsnitest;
+package at.vchrist.jsnitest;
 
 import java.awt.Font;
 import java.awt.Toolkit;
@@ -17,15 +17,14 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.plaf.FontUIResource;
 
-import jsni.MouseDoubleClickEventDispatcher;
-//import jsni.MouseSingleClickEvent;
-import jsni.MouseClickEvent;
-import jsni.MouseClickListener;
-import jsni.MouseDoubleClickEvent;
-import jsni.MouseScrollEvent;
-import jsni.MouseScrollListener;
-import jsni.StatusNotifierItem;
-import jsni.StatusNotifierItemException;
+import at.vchrist.jsni.MouseClickEvent;
+import at.vchrist.jsni.MouseClickListener;
+import at.vchrist.jsni.MouseDoubleClickEvent;
+import at.vchrist.jsni.MouseDoubleClickEventDispatcher;
+import at.vchrist.jsni.MouseScrollEvent;
+import at.vchrist.jsni.MouseScrollListener;
+import at.vchrist.jsni.StatusNotifierItem;
+import at.vchrist.jsni.StatusNotifierItemException;
 
 public class JSniTest {
 	static JPopupMenu menu = null;

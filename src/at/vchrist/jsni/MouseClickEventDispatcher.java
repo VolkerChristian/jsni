@@ -1,4 +1,4 @@
-package jsni;
+package at.vchrist.jsni;
 
 import java.util.ArrayList;
 

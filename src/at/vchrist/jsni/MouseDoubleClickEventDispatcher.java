@@ -1,4 +1,4 @@
-package jsni;
+package at.vchrist.jsni;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

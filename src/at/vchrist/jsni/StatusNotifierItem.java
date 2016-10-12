@@ -1,4 +1,4 @@
-package jsni;
+package at.vchrist.jsni;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -6,13 +6,13 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
 
-import jsni.org.kde.StatusNotifierItemInterface;
-import jsni.org.kde.StatusNotifierWatcherInterface;
-
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.DBusSignal;
 import org.freedesktop.dbus.Variant;
 import org.freedesktop.dbus.exceptions.DBusException;
+
+import at.vchrist.jsni.org.kde.StatusNotifierItemInterface;
+import at.vchrist.jsni.org.kde.StatusNotifierWatcherInterface;
 
 public class StatusNotifierItem {
 	private StatusNotifierItemD snid = null;
