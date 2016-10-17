@@ -1,7 +1,6 @@
 package at.vchrist.jsni;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
@@ -9,7 +8,6 @@ import java.util.Map;
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.DBusSignal;
 import org.freedesktop.dbus.Variant;
-import org.freedesktop.dbus.exceptions.DBusException;
 
 import at.vchrist.jsni.org.kde.StatusNotifierItemInterface;
 import at.vchrist.jsni.org.kde.StatusNotifierWatcherInterface;
@@ -118,7 +116,7 @@ public class StatusNotifierItem {
 					dbus = DBusConnection.getConnection(DBusConnection.SESSION);
 					sniWatcher = dbus.getRemoteObject("org.kde.StatusNotifierWatcher", "/StatusNotifierWatcher",
 							StatusNotifierWatcherInterface.class);
-				} catch (DBusException e) {
+				} catch (Throwable e) {
 					throw new StatusNotifierItemException(e.getMessage());
 				}
 			}
@@ -147,8 +145,7 @@ public class StatusNotifierItem {
 				Constructor<?> ctor = innerClass.getDeclaredConstructor(this.getClass());
 				Property<?> property = (Property<?>) ctor.newInstance(this);
 				properties.put(property.name(), property);
-			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
-					| IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			} catch (Throwable e) {
 				throw new StatusNotifierItemException(e.getMessage());
 			}
 		}
@@ -170,7 +167,7 @@ public class StatusNotifierItem {
 						dbus.unExportObject("/StatusNotifierItem");
 						dbus.releaseBusName("org.tvbrowser");
 					}
-				} catch (DBusException e) {
+				} catch (Throwable e) {
 					throw new StatusNotifierItemException(e.getMessage());
 				}
 				isVisible = visible;
@@ -290,9 +287,7 @@ public class StatusNotifierItem {
 					if (dbus != null) {
 						dbus.sendSignal(dbusSignal);
 					}
-				} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-						| NoSuchMethodException | SecurityException | IllegalArgumentException
-						| InvocationTargetException e) {
+				} catch (Throwable e) {
 					throw new StatusNotifierItemException(e.getMessage());
 				}
 			}
